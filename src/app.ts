@@ -7,20 +7,31 @@ mongoose
             autoIndex: false,
             useNewUrlParser: true
         })
-    .then(() => {
+    .then(async () => {
         console.log("Connected to DB")
-        main()
+        await seed()
+        await main()
     })
     .catch(err => console.error("Error connecting to DB: ", err))
 
 
 async function main() {
     // user is of type IUser
+    // Now also contains birthdate field, but not age
     const user = await User.findOne({ email: 'someemail@e.com' })
     console.log("Found User: ", user)
 }
 
 async function seed() {
-    const newUser = await User.create({ email: 'someemail@e.com', password: 'abcdef', name: 'Mr. Smith' })
+    // First delete users with same email
+    await User.deleteMany({ email: 'someemail@e.com' })
+
+    const newUser = await User.create({
+        email: 'someemail@e.com',
+        password: 'abcdef',
+        name: 'Mr. Smith',
+        birthdate: new Date(1993, 11, 17)
+    })
     console.log("Created User: ", newUser)
 }
+//

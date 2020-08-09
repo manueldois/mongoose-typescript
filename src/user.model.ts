@@ -1,12 +1,20 @@
 import { Schema, model, Document } from 'mongoose'
 
-interface IUser {
+interface IUserShared {
     name: string,
     email: string,
-    password: string
 }
 
-type TUserDoc = IUser & Document
+interface IUserBackend extends IUserShared {
+    password: string,
+    birthdate: Date
+}
+
+interface IUserFrontend extends IUserShared {
+    age: number // Exists only on the frontend
+}
+
+type TUserDoc = IUserBackend & Document
 
 const UserSchema = new Schema({
     name: String,
@@ -14,9 +22,10 @@ const UserSchema = new Schema({
         type: String,
         unique: true
     },
-    password: String
+    password: String,
+    birthdate: Date
 })
 
 const User = model<TUserDoc>('User', UserSchema)
 
-export { User, IUser } 
+export { User, IUserShared, IUserFrontend, IUserBackend } 
