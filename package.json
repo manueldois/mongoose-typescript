@@ -1,0 +1,19 @@
+{
+  "name": "mongoose-ts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/app.js",
+  "scripts": {
+    "start": "node dist/app.js",
+    "debug": "tsc --watch & nodemon --inspect dist/app.js"
+  },
+  "author": "Manuel Maldonado",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@types/node": "^13.11.0",
+    "mongoose": "^5.9.28"
+  }
+}
