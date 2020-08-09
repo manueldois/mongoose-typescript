@@ -16,7 +16,7 @@ mongoose
 
 
 async function main() {
-    // user is of type IUser
+    // user is of type TUserDoc
     // Now also contains birthdate field, but not age
     const user = await User.findOne({ email: 'someemail@e.com' })
     console.log("Found User: ", user)

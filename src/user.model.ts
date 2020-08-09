@@ -16,7 +16,7 @@ interface IUserFrontend extends IUserShared {
 
 type TUserDoc = IUserBackend & Document
 
-const UserSchema = new Schema({
+const UserSchemaFields: Record<keyof IUserBackend, any> = {
     name: String,
     email: {
         type: String,
@@ -24,7 +24,9 @@ const UserSchema = new Schema({
     },
     password: String,
     birthdate: Date
-})
+}
+
+const UserSchema = new Schema(UserSchemaFields)
 
 const User = model<TUserDoc>('User', UserSchema)
 
