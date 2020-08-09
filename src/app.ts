@@ -1,5 +1,6 @@
 import * as mongoose from 'mongoose'
-import { User } from './user.model'
+import { User, TUserDoc } from './user.model'
+import { UnPopulated } from './mongoose'
 
 mongoose
     .connect('mongodb://localhost:27017/tests',
@@ -14,24 +15,34 @@ mongoose
     })
     .catch(err => console.error("Error connecting to DB: ", err))
 
-
 async function main() {
-    // user is of type TUserDoc
-    // Now also contains birthdate field, but not age
-    const user = await User.findOne({ email: 'someemail@e.com' })
-    console.log("Found User: ", user)
+    // Here userAdam friends field is just an id array
+    const userAdam = await User.findOne({ email: 'adam@email.com' }) as UnPopulated<TUserDoc, 'friends'>
+    console.log("Adam without friends: ", userAdam)
+
+    // But here the friends are populated and are of type TUserDoc
+    const userAdamWithFriends = await User.findOne({ email: 'adam@email.com' }).populate('friends')
+    console.log("Adam with friends: ", userAdamWithFriends)
 }
 
 async function seed() {
-    // First delete users with same email
-    await User.deleteMany({ email: 'someemail@e.com' })
+    // First delete all users 
+    await User.deleteMany({})
 
-    const newUser = await User.create({
-        email: 'someemail@e.com',
+    // Create two users
+    const newUser1 = await User.create({
+        email: 'smith@email.com',
         password: 'abcdef',
         name: 'Mr. Smith',
-        birthdate: new Date(1993, 11, 17)
+        birthdate: new Date(1993, 11, 17),
+        friends: []
     })
-    console.log("Created User: ", newUser)
+
+    const newUser2 = await User.create({
+        email: 'adam@email.com',
+        password: 'abcdef',
+        name: 'Mr. Adam',
+        birthdate: new Date(1996, 11, 17),
+        friends: [newUser1.id]
+    })
 }
-//

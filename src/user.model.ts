@@ -1,13 +1,15 @@
-import { Schema, model, Document } from 'mongoose'
+import { Schema, model, Document, Types } from 'mongoose'
 
+type ID = Types.ObjectId
 interface IUserShared {
     name: string,
     email: string,
+    friends: ID[] | TUserDoc[]
 }
 
 interface IUserBackend extends IUserShared {
     password: string,
-    birthdate: Date
+    birthdate: Date,
 }
 
 interface IUserFrontend extends IUserShared {
@@ -23,11 +25,15 @@ const UserSchemaFields: Record<keyof IUserBackend, any> = {
         unique: true
     },
     password: String,
-    birthdate: Date
+    birthdate: Date,
+    friends: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    }]
 }
 
 const UserSchema = new Schema(UserSchemaFields)
 
 const User = model<TUserDoc>('User', UserSchema)
 
-export { User, IUserShared, IUserFrontend, IUserBackend } 
+export { User, TUserDoc, IUserShared, IUserFrontend, IUserBackend } 
