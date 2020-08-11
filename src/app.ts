@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose'
-import { User, TUserDoc } from './user.model'
-import { UnPopulated, Populated } from './mongoose'
+import { User, IUserDoc } from './user.model'
+import { Populated } from './mongoose'
 
 
 mongoose
@@ -17,9 +17,32 @@ mongoose
     .catch(err => console.error("Error connecting to DB: ", err))
 
 async function main() {
-    const smith = await User.findOne({email: 'smith@email.com'})
+    // Simple query
+    const adam =
+        await User.findOne({ email: 'adam@email.com' })
+
+    // Populate
+    const adamPopulated =
+        await User.findOne({ email: 'adam@email.com' })
+            .populate('friends')
+            .populate('boss') as Populated<IUserDoc, 'friends' | 'boss'>
+
+    // Lean
+    const adamLean =
+        await User.findOne({ email: 'adam@email.com' })
+            .lean()
+
+    // Select
+    const adamSelect =
+        await User.findOne({ email: 'adam@email.com' })
+            .select('friends') as Pick<IUserDoc, 'friends'>
+
+    // Instance methods
+    const smith = await User.findOne({ email: 'smith@email.com' })
     const smithsEmployees = await smith.getEmployees()
-    console.log("smithsEmployees: ", smithsEmployees)
+
+    // Statics
+    const usersYoungerThan23 = await User.findYoungerThan(23)
 }
 
 async function seed() {
@@ -27,7 +50,7 @@ async function seed() {
     await User.deleteMany({})
 
     // Create two users
-    const newUser1 = await User.create({
+    const smith = await User.create({
         email: 'smith@email.com',
         password: 'abcdef',
         name: 'Mr. Smith',
@@ -36,12 +59,12 @@ async function seed() {
         boss: null
     })
 
-    const newUser2 = await User.create({
+    const adam = await User.create({
         email: 'adam@email.com',
         password: 'abcdef',
         name: 'Mr. Adam',
         birthdate: new Date(2000, 1, 1),
-        friends: [newUser1.id],
-        boss: newUser1.id
+        friends: [smith.id],
+        boss: smith.id
     })
 }

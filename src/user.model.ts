@@ -1,26 +1,33 @@
 import { Schema, model, Document, Model } from 'mongoose'
 import { ID } from './mongoose'
 
+// Fields that exist both on the frontend and the backend
 interface IUserShared {
     name: string,
     email: string,
-    friends: ID[] | TUserDoc[],
-    boss: ID | TUserDoc,
+    friends: ID[] | IUserDoc[],
+    boss: ID | IUserDoc,
 }
 
+// Fields that exist only in the backend
 interface IUserBackend extends IUserShared {
     password: string,
     birthdate: Date,
 }
 
+// Fields that exist only in the frontend.
+// This should be imported into your frontend code.
 interface IUserFrontend extends IUserShared {
     age: number // Exists only on the frontend
 }
 
-type TUserDoc = IUserBackend & Document & {
-    getEmployees(): Promise<TUserDoc[]>
+// Interface for the mongoose document. aka: with save(), _id, etc,
+// and declaration of custom instance methods
+interface IUserDoc extends IUserBackend, Document {
+    getEmployees(): Promise<IUserDoc[]>
 }
 
+// The fields for the mongoose schema, linked by key name to the IUserBackend interface
 const UserSchemaFields: Record<keyof IUserBackend, any> = {
     name: String,
     email: {
@@ -39,10 +46,12 @@ const UserSchemaFields: Record<keyof IUserBackend, any> = {
     }
 }
 
-interface IUserModel extends Model<TUserDoc> {
-    findYoungerThan(age: number): Promise<TUserDoc[]>
+// Interface for the User model, with declaration of custom statics
+interface IUserModel extends Model<IUserDoc> {
+    findYoungerThan(age: number): Promise<IUserDoc[]>
 }
 
+// Creating the user schema, declaring statics and methods
 const UserSchema = new Schema(UserSchemaFields)
 
 UserSchema.static('findYoungerThan', function (age: number) {
@@ -54,6 +63,7 @@ UserSchema.method('getEmployees', function (cb: any) {
     return User.find().where('boss').in(this.id).exec()
 });
 
-const User = model<TUserDoc, IUserModel>('User', UserSchema)
+// Passing our types to the model function so the User model is extended
+const User = model<IUserDoc, IUserModel>('User', UserSchema)
 
-export { User, TUserDoc, IUserShared, IUserFrontend, IUserBackend } 
+export { User, IUserDoc, IUserShared, IUserFrontend, IUserBackend } 
