@@ -23,6 +23,10 @@ async function main() {
     // But here the friends are populated and are of type TUserDoc
     const userAdamWithFriends = await User.findOne({ email: 'adam@email.com' }).populate('friends')
     console.log("Adam with friends: ", userAdamWithFriends)
+
+    // Lean returns an object with just the document properties
+    const userAdamLean = await User.findOne({ email: 'adam@email.com' }).lean()
+    console.log("Adam lean: ", userAdamLean)
 }
 
 async function seed() {
