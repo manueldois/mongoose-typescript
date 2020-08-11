@@ -17,10 +17,9 @@ mongoose
     .catch(err => console.error("Error connecting to DB: ", err))
 
 async function main() {
-
-    const usersYoungerThan23 = await User.findYoungerThan(23)
-
-    console.log("UsersYoungerThan23: ", usersYoungerThan23)
+    const smith = await User.findOne({email: 'smith@email.com'})
+    const smithsEmployees = await smith.getEmployees()
+    console.log("smithsEmployees: ", smithsEmployees)
 }
 
 async function seed() {

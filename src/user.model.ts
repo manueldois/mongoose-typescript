@@ -17,7 +17,9 @@ interface IUserFrontend extends IUserShared {
     age: number // Exists only on the frontend
 }
 
-type TUserDoc = IUserBackend & Document
+type TUserDoc = IUserBackend & Document & {
+    getEmployees(): Promise<TUserDoc[]>
+}
 
 const UserSchemaFields: Record<keyof IUserBackend, any> = {
     name: String,
@@ -37,7 +39,7 @@ const UserSchemaFields: Record<keyof IUserBackend, any> = {
     }
 }
 
-export interface IUserModel extends Model<TUserDoc> {
+interface IUserModel extends Model<TUserDoc> {
     findYoungerThan(age: number): Promise<TUserDoc[]>
 }
 
@@ -47,6 +49,10 @@ UserSchema.static('findYoungerThan', function (age: number) {
     const minimumBirthDate = new Date(Date.now() - (age * 365 * 24 * 3600 * 1000))
     return User.find().where('birthdate').gt(minimumBirthDate)
 })
+
+UserSchema.method('getEmployees', function (cb: any) {
+    return User.find().where('boss').in(this.id).exec()
+});
 
 const User = model<TUserDoc, IUserModel>('User', UserSchema)
 
