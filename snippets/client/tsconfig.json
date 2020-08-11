@@ -6,9 +6,8 @@
     "target": "ES2019",
     "jsx": "preserve",
     "allowJs": true,
-    "lib": ["ES2019"],
+    "lib": ["ES2019", "DOM"],
     "sourceMap": true,
   },
-  "exclude": ["node_modules", "dist", "client"],
-  "include": ["src/**/*", "snippets"]
+  "exclude": ["node_modules", "dist"],
 }
