@@ -1,10 +1,11 @@
-import { Schema, model, Document, Types } from 'mongoose'
+import { Schema, model, Document } from 'mongoose'
+import { ID } from './mongoose'
 
-type ID = Types.ObjectId
 interface IUserShared {
     name: string,
     email: string,
-    friends: ID[] | TUserDoc[]
+    friends: ID[] | TUserDoc[],
+    boss: ID | TUserDoc,
 }
 
 interface IUserBackend extends IUserShared {
@@ -29,7 +30,11 @@ const UserSchemaFields: Record<keyof IUserBackend, any> = {
     friends: [{
         type: Schema.Types.ObjectId,
         ref: 'User',
-    }]
+    }],
+    boss: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    }
 }
 
 const UserSchema = new Schema(UserSchemaFields)

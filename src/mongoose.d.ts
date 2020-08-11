@@ -1,14 +1,16 @@
-import * as mongoose from 'mongoose'
+import { Types } from 'mongoose'
+
+export type ID = Types.ObjectId
 
 export type Populated<M, K extends keyof M> =
     Omit<M, K> &
     {
-        [P in K]: Exclude<M[K], mongoose.Types.ObjectId[]>
+        [P in K]: Exclude<M[P], ID[] | ID>
     }
 
 export type UnPopulated<M, K extends keyof M> =
     Omit<M, K> &
     {
-        [P in K]: Extract<M[K], mongoose.Types.ObjectId[]>
+        [P in K]: Extract<M[P], ID[] | ID>
     }
 

@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose'
 import { User, TUserDoc } from './user.model'
-import { UnPopulated } from './mongoose'
+import { UnPopulated, Populated } from './mongoose'
+
 
 mongoose
     .connect('mongodb://localhost:27017/tests',
@@ -16,17 +17,14 @@ mongoose
     .catch(err => console.error("Error connecting to DB: ", err))
 
 async function main() {
-    // Here userAdam friends field is just an id array
-    const userAdam = await User.findOne({ email: 'adam@email.com' }) as UnPopulated<TUserDoc, 'friends'>
-    console.log("Adam without friends: ", userAdam)
+    const userAdam = await User.findOne({ email: 'adam@email.com' })
+        .populate('friends')
+        .populate('boss') as Populated<TUserDoc, 'friends' | 'boss'>
 
-    // But here the friends are populated and are of type TUserDoc
-    const userAdamWithFriends = await User.findOne({ email: 'adam@email.com' }).populate('friends')
-    console.log("Adam with friends: ", userAdamWithFriends)
-
-    // Lean returns an object with just the document properties
-    const userAdamLean = await User.findOne({ email: 'adam@email.com' }).lean()
-    console.log("Adam lean: ", userAdamLean)
+    userAdam.friends.forEach(f => f.save())
+    userAdam.boss.save()
+    
+    console.log("Adam: ", userAdam.friends)
 }
 
 async function seed() {
@@ -39,7 +37,8 @@ async function seed() {
         password: 'abcdef',
         name: 'Mr. Smith',
         birthdate: new Date(1993, 11, 17),
-        friends: []
+        friends: [],
+        boss: null
     })
 
     const newUser2 = await User.create({
@@ -47,6 +46,7 @@ async function seed() {
         password: 'abcdef',
         name: 'Mr. Adam',
         birthdate: new Date(1996, 11, 17),
-        friends: [newUser1.id]
+        friends: [newUser1.id],
+        boss: newUser1.id
     })
 }
