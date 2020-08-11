@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose'
 import { User, IUserDoc } from './user.model'
-import { Populated } from './mongoose'
+import { Populated, Select } from './mongoose'
 
 
 mongoose
@@ -35,7 +35,7 @@ async function main() {
     // Select
     const adamSelect =
         await User.findOne({ email: 'adam@email.com' })
-            .select('friends') as Pick<IUserDoc, 'friends'>
+            .select('friends') as Select<IUserDoc, 'friends'>
 
     // Instance methods
     const smith = await User.findOne({ email: 'smith@email.com' })
