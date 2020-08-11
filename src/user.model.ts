@@ -1,4 +1,4 @@
-import { Schema, model, Document } from 'mongoose'
+import { Schema, model, Document, Model } from 'mongoose'
 import { ID } from './mongoose'
 
 interface IUserShared {
@@ -37,8 +37,17 @@ const UserSchemaFields: Record<keyof IUserBackend, any> = {
     }
 }
 
+export interface IUserModel extends Model<TUserDoc> {
+    findYoungerThan(age: number): Promise<TUserDoc[]>
+}
+
 const UserSchema = new Schema(UserSchemaFields)
 
-const User = model<TUserDoc>('User', UserSchema)
+UserSchema.static('findYoungerThan', function (age: number) {
+    const minimumBirthDate = new Date(Date.now() - (age * 365 * 24 * 3600 * 1000))
+    return User.find().where('birthdate').gt(minimumBirthDate)
+})
+
+const User = model<TUserDoc, IUserModel>('User', UserSchema)
 
 export { User, TUserDoc, IUserShared, IUserFrontend, IUserBackend } 

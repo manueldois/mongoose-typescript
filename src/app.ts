@@ -17,14 +17,10 @@ mongoose
     .catch(err => console.error("Error connecting to DB: ", err))
 
 async function main() {
-    const userAdam = await User.findOne({ email: 'adam@email.com' })
-        .populate('friends')
-        .populate('boss') as Populated<TUserDoc, 'friends' | 'boss'>
 
-    userAdam.friends.forEach(f => f.save())
-    userAdam.boss.save()
-    
-    console.log("Adam: ", userAdam.friends)
+    const usersYoungerThan23 = await User.findYoungerThan(23)
+
+    console.log("UsersYoungerThan23: ", usersYoungerThan23)
 }
 
 async function seed() {
@@ -36,7 +32,7 @@ async function seed() {
         email: 'smith@email.com',
         password: 'abcdef',
         name: 'Mr. Smith',
-        birthdate: new Date(1993, 11, 17),
+        birthdate: new Date(1990, 1, 1),
         friends: [],
         boss: null
     })
@@ -45,7 +41,7 @@ async function seed() {
         email: 'adam@email.com',
         password: 'abcdef',
         name: 'Mr. Adam',
-        birthdate: new Date(1996, 11, 17),
+        birthdate: new Date(2000, 1, 1),
         friends: [newUser1.id],
         boss: newUser1.id
     })
