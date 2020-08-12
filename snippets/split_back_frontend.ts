@@ -13,9 +13,7 @@ interface IUserBackend extends IUserShared {
 }
 
 // Fields that exist only in the frontend.
-interface IUserFrontend {
-    name: string,
-    email: string,
+interface IUserFrontend extends IUserShared {
     age: number // Exists only on the frontend
 }
 
